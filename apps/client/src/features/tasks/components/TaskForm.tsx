@@ -38,6 +38,9 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
 					if (trimmed) onSubmit(trimmed);
 					else onCancel();
 				}}
+				css={{
+					fontSize: '$xs',
+				}}
 				placeholder="Task name…"
 			/>
 		</Flex>

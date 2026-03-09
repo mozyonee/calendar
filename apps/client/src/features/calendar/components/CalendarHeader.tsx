@@ -16,6 +16,7 @@ const Title = styled('h1', {
 
 const SearchInput = styled(Input, {
 	width: '12rem',
+	fontSize: '$sm',
 	padding: '0.5rem 0.5rem 0.5rem 2rem', // left padding for icon
 	backgroundColor: '$accent600',
 	color: '$white',
@@ -37,6 +38,7 @@ const SearchInput = styled(Input, {
 
 const IconButton = styled(Button, {
 	backgroundColor: 'transparent',
+	borderRadius: '$sm',
 	padding: '$1 !important',
 	'&:hover': {
 		backgroundColor: 'color-mix(in srgb, $gray300 50%, transparent)',
@@ -64,7 +66,7 @@ export function CalendarHeader() {
 			justify="between"
 			gap={3}
 			css={{
-				padding: '$3 $4',
+				padding: '$2 $4',
 				borderBottom: '1px solid $gray200',
 				backgroundColor: '$accent500',
 				color: '$white',
@@ -78,10 +80,10 @@ export function CalendarHeader() {
 					Today
 				</IconButton>
 				<IconButton type="button" onClick={() => dispatch(prevMonth())} aria-label="Previous month">
-					<ChevronLeft />
+					<ChevronLeft size={20} />
 				</IconButton>
 				<IconButton type="button" onClick={() => dispatch(nextMonth())} aria-label="Next month">
-					<ChevronRight />
+					<ChevronRight size={20} />
 				</IconButton>
 			</Flex>
 

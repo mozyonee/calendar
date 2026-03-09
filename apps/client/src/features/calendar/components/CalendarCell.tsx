@@ -61,16 +61,6 @@ const TaskCount = styled('span', {
 	color: '$gray400',
 });
 
-const Cell = styled(Container, {
-	'& button': {
-		opacity: 0,
-		transition: 'opacity 150ms ease',
-	},
-	'&:hover button': {
-		opacity: 1,
-	},
-});
-
 interface Props {
 	day: CalendarDay;
 	tasks: Task[];
@@ -100,7 +90,7 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 	const taskCount = tasks.length;
 
 	return (
-		<Cell ref={setNodeRef} currentMonth={day.isCurrentMonth} isToday={day.isToday} isOver={isOver}>
+		<Container ref={setNodeRef} currentMonth={day.isCurrentMonth} isToday={day.isToday} isOver={isOver}>
 			{/* Header */}
 			<Flex align="center" gap={1}>
 				<DayNumber currentMonth={day.isCurrentMonth} isToday={day.isToday}>
@@ -130,7 +120,7 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 				gap={1}
 				flex={1}
 				onClick={() => setIsAdding(true)}
-				css={{ margin: '$1 0', userSelect: 'none' }}
+				css={{ margin: '$1 0 $2 0', userSelect: 'none' }}
 			>
 				<TaskList tasks={tasks} onEdit={handleEditTask} onRemove={handleRemoveTask} />
 			</Flex>
@@ -147,10 +137,19 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 						e.stopPropagation();
 						setIsAdding(true);
 					}}
+					size={'sm'}
+					css={{
+						opacity: 0,
+
+						'&:hover': {
+							backgroundColor: '$accent500',
+							opacity: 1,
+						},
+					}}
 				>
 					+ Add task
 				</Button>
 			)}
-		</Cell>
+		</Container>
 	);
 }

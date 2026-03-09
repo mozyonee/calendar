@@ -16,5 +16,5 @@ html, body {
 
 *, *::before, *::after {
 	box-sizing: border-box;
-	transition: all 250ms ease-in-out;
+	transition: all 150ms ease-in-out;
 }
