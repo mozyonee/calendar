@@ -1,7 +1,5 @@
+import { CalendarPage } from '@/components/calendar/CalendarPage';
+
 export default function Home() {
-	return (
-		<main>
-			<h1>Calendar</h1>
-		</main>
-	);
+	return <CalendarPage />;
 }
