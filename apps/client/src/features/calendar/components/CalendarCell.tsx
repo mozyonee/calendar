@@ -18,14 +18,12 @@ const Container = styled(Card, {
 	padding: '$3',
 	display: 'flex',
 	flexDirection: 'column',
-	transition: 'background 150ms ease',
-	borderRadius: '$lg',
-	borderColor: 'transparent',
-	boxShadow: 'none',
 
 	variants: {
 		currentMonth: {
-			true: { backgroundColor: '$gray100' },
+			true: {
+				backgroundColor: '$gray100',
+			},
 			false: { backgroundColor: '$gray50' },
 		},
 		isToday: {
@@ -63,24 +61,11 @@ const TaskCount = styled('span', {
 	color: '$gray400',
 });
 
-const AddTaskButton = styled(Button, {
-	fontSize: '$xs',
-	color: '$gray400',
-	textAlign: 'left',
-	width: '100%',
-	paddingLeft: '$1',
-	marginTop: '$1',
-	opacity: 0,
-	transition: 'opacity 150ms ease, color 150ms ease',
-	background: 'transparent',
-
-	'&:hover': {
-		color: '$accent500',
-		opacity: 1,
-	},
-});
-
 const Cell = styled(Container, {
+	'& button': {
+		opacity: 0,
+		transition: 'opacity 150ms ease',
+	},
 	'&:hover button': {
 		opacity: 1,
 	},
@@ -117,14 +102,13 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 	return (
 		<Cell ref={setNodeRef} currentMonth={day.isCurrentMonth} isToday={day.isToday} isOver={isOver}>
 			{/* Header */}
-			<Flex align="center" gap={1} css={{ marginBottom: '$1', userSelect: 'none' }}>
+			<Flex align="center" gap={1}>
 				<DayNumber currentMonth={day.isCurrentMonth} isToday={day.isToday}>
 					{day.isCurrentMonth ? (
 						day.dayNumber
 					) : (
 						<>
-							<MonthAbbr>{monthAbbr}</MonthAbbr>
-							{day.dayNumber}
+							<MonthAbbr>{monthAbbr}</MonthAbbr> {day.dayNumber}
 						</>
 					)}
 				</DayNumber>
@@ -141,7 +125,13 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 			))}
 
 			{/* Tasks */}
-			<Flex flex={1} onClick={() => setIsAdding(true)}>
+			<Flex
+				direction="column"
+				gap={1}
+				flex={1}
+				onClick={() => setIsAdding(true)}
+				css={{ margin: '$1 0', userSelect: 'none' }}
+			>
 				<TaskList tasks={tasks} onEdit={handleEditTask} onRemove={handleRemoveTask} />
 			</Flex>
 
@@ -150,7 +140,8 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 
 			{/* Add task affordance */}
 			{!isAdding && day.isCurrentMonth && (
-				<AddTaskButton
+				<Button
+					variant={'primary'}
 					type="button"
 					onClick={(e) => {
 						e.stopPropagation();
@@ -158,7 +149,7 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 					}}
 				>
 					+ Add task
-				</AddTaskButton>
+				</Button>
 			)}
 		</Cell>
 	);

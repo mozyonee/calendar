@@ -1,15 +1,20 @@
 'use client';
 
-import { Card, Flex, IconButton, Input } from '@/components/ui';
+import { Button, Card, Flex, Input } from '@/components/ui';
 import { TASK_COLORS } from '@/features/tasks/lib/taskColors';
 import { styled } from '@/lib/stitches';
 import type { Task, TaskColor } from '@calendar/types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 const TaskCardRoot = styled(Card, {
-	marginBottom: '$1_5',
+	padding: '$2',
+	width: '100%',
+	borderRadius: '$md',
+	minHeight: '2rem',
+
 	variants: {
 		isOverlay: {
 			true: {
@@ -35,13 +40,12 @@ const TaskCardRoot = styled(Card, {
 	],
 });
 
-const ColorDot = styled('button', {
+const ColorDot = styled('div', {
 	height: '0.375rem',
 	width: '1.5rem',
 	borderRadius: '$full',
 	border: 'none',
 	padding: 0,
-	cursor: 'pointer',
 	transition: 'opacity 150ms ease',
 
 	'&:hover': {
@@ -58,42 +62,25 @@ const ColorDot = styled('button', {
 		},
 		selected: {
 			true: {
-				boxShadow: '0 0 0 2px $gray400',
+				outline: '2px solid $gray400',
+				outlineOffset: '1px',
 				opacity: 1,
+				margin: '0 0 $2 0',
 			},
 			false: {
-				opacity: 0.6,
+				margin: '0 0 $1 0',
 			},
 		},
 	},
-});
-
-const InlineInput = styled(Input, {
-	flex: 1,
-	minWidth: 0,
-	background: 'transparent',
-	borderBottom: '1px solid transparent',
-	paddingY: '$0.5',
-
-	'&:focus': {
-		borderBottomColor: '$accent400',
-	},
-});
-
-const RemoveButton = styled(IconButton, {
-	fontSize: '$xs',
-	color: '$gray400',
-	padding: 0,
-
-	'&:hover': {
-		color: '$rose500',
+	defaultVariants: {
+		selected: false,
 	},
 });
 
 const Title = styled('p', {
 	fontSize: '$xs',
 	color: '$gray800',
-	lineHeight: 1.2,
+	margin: 0,
 });
 
 interface Props {
@@ -155,7 +142,7 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 			onClick={(e) => e.stopPropagation()}
 		>
 			{/* Colour label bar */}
-			<Flex gap={1} css={{ padding: '$1_5 $1_5 $0.5' }}>
+			<Flex gap={1}>
 				{isEditing ? (
 					TASK_COLORS.map((c) => (
 						<ColorDot
@@ -166,10 +153,13 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 								e.preventDefault();
 								setEditColor(c);
 							}}
+							css={{
+								cursor: 'pointer',
+							}}
 						/>
 					))
 				) : (
-					<ColorDot color={task.color} selected />
+					<ColorDot color={task.color} selected={false} />
 				)}
 			</Flex>
 
@@ -179,32 +169,33 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 				onClick={() => {
 					if (!isEditing) setIsEditing(true);
 				}}
-				css={{
-					padding: '$1_5 $1_5 $1_5',
-					cursor: 'pointer',
-					'&:focus-within': {
-						outline: 'none',
-					},
-				}}
 			>
 				{isEditing ? (
-					<Flex align="center" gap={1} css={{ flex: 1 }}>
-						<InlineInput
+					<Flex align="center" gap={1}>
+						<Input
 							ref={inputRef}
 							value={editValue}
 							onChange={(e) => setEditValue(e.target.value)}
 							onKeyDown={handleKeyDown}
 							onBlur={commitEdit}
+							css={{
+								fontSize: '$xs',
+								color: '$gray800',
+							}}
 						/>
-						<RemoveButton
+						<Button
 							type="button"
 							onMouseDown={(e) => {
 								e.preventDefault();
 								onRemove();
 							}}
+							css={{
+								padding: '$1',
+								height: '100%',
+							}}
 						>
-							✕
-						</RemoveButton>
+							<X size={15} />
+						</Button>
 					</Flex>
 				) : (
 					<Title>{task.title}</Title>

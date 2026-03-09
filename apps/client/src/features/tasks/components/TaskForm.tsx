@@ -27,7 +27,7 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
 	}
 
 	return (
-		<Flex direction="column" css={{ marginTop: '$1', paddingLeft: '$0.5', paddingRight: '$0.5' }}>
+		<Flex direction="column">
 			<Input
 				ref={inputRef}
 				value={value}

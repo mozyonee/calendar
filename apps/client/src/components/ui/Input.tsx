@@ -2,10 +2,10 @@ import { styled } from '@/lib/stitches';
 
 export const Input = styled('input', {
 	width: '100%',
-	padding: '$1_5 $1.5',
+	padding: '$1',
 	fontSize: '$sm',
 	border: '1px solid $gray200',
-	borderRadius: '$md',
+	borderRadius: '$sm',
 	backgroundColor: '$white',
 	color: '$gray900',
 	outline: 'none',

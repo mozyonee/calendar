@@ -1,11 +1,12 @@
 'use client';
 
-import { Button, Flex, IconButton, Input } from '@/components/ui';
+import { Button, Flex, Input } from '@/components/ui';
 import { goToToday, nextMonth, prevMonth, setSearchQuery } from '@/features/calendar/slices/calendarSlice';
 import { MONTH_NAMES } from '@/features/calendar/utils/calendarUtils';
 import { useDebounce } from '@/hooks/useDebounce';
 import { styled } from '@/lib/stitches';
 import { useAppDispatch, useAppSelector } from '@/store';
+import { ChevronLeft, ChevronRight, SearchIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const Title = styled('h1', {
@@ -13,25 +14,15 @@ const Title = styled('h1', {
 	fontWeight: '$semibold',
 });
 
-const Search = styled('div', {
-	position: 'relative',
-});
-
-const SearchIcon = styled('svg', {
-	width: '1rem',
-	height: '1rem',
-	position: 'absolute',
-	left: '0.625rem',
-	top: '50%',
-	transform: 'translateY(-50%)',
-	color: 'inherit',
-});
-
 const SearchInput = styled(Input, {
-	paddingLeft: '2rem',
 	width: '12rem',
+	padding: '0.5rem 0.5rem 0.5rem 2rem', // left padding for icon
 	backgroundColor: '$accent600',
 	color: '$white',
+	backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 2a8 8 0 105.292 14.292l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>')`,
+	backgroundRepeat: 'no-repeat',
+	backgroundPosition: '0.5rem center',
+	backgroundSize: '1rem 1rem',
 
 	'&::placeholder': {
 		color: '$white',
@@ -41,6 +32,18 @@ const SearchInput = styled(Input, {
 	'&:focus': {
 		boxShadow: '0 0 0 2px $accent200',
 		borderColor: '$accent400',
+	},
+});
+
+const IconButton = styled(Button, {
+	backgroundColor: 'transparent',
+	padding: '$1 !important',
+	'&:hover': {
+		backgroundColor: 'color-mix(in srgb, $gray300 50%, transparent)',
+	},
+	'&:focus-visible': {
+		outline: '2px solid $accent400',
+		outlineOffset: '2px',
 	},
 });
 
@@ -71,18 +74,14 @@ export function CalendarHeader() {
 			}}
 		>
 			<Flex align="center" gap={2}>
-				<Button variant="secondary" size="sm" type="button" onClick={() => dispatch(goToToday())}>
+				<IconButton type="button" onClick={() => dispatch(goToToday())}>
 					Today
-				</Button>
+				</IconButton>
 				<IconButton type="button" onClick={() => dispatch(prevMonth())} aria-label="Previous month">
-					<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-					</svg>
+					<ChevronLeft />
 				</IconButton>
 				<IconButton type="button" onClick={() => dispatch(nextMonth())} aria-label="Next month">
-					<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-					</svg>
+					<ChevronRight />
 				</IconButton>
 			</Flex>
 
@@ -90,22 +89,14 @@ export function CalendarHeader() {
 				{MONTH_NAMES[month - 1]} {year}
 			</Title>
 
-			<Search>
-				<SearchIcon fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						strokeWidth={2}
-						d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-					/>
-				</SearchIcon>
+			<Flex align="center" gap={2}>
 				<SearchInput
 					type="text"
 					placeholder="Search tasks…"
 					value={searchValue}
 					onChange={(e) => setSearchValue(e.target.value)}
 				/>
-			</Search>
+			</Flex>
 		</Flex>
 	);
 }

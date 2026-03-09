@@ -2,7 +2,6 @@ import { styled } from '@/lib/stitches';
 
 export const Flex = styled('div', {
 	display: 'flex',
-	width: '100%',
 	boxSizing: 'border-box',
 
 	variants: {

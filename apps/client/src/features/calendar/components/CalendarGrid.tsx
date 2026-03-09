@@ -32,7 +32,7 @@ export function CalendarGrid({ days, tasksByDate, holidaysByDate }: Props) {
 
 	return (
 		<DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-			<Flex direction="column" flex={1} css={{ overflow: 'hidden' }}>
+			<Flex direction="column" flex={1}>
 				{/* Day-of-week header */}
 				<Grid cols={7}>
 					{DAY_NAMES.map((name) => (
@@ -41,7 +41,7 @@ export function CalendarGrid({ days, tasksByDate, holidaysByDate }: Props) {
 				</Grid>
 
 				{/* Calendar grid */}
-				<Grid cols={7} rows="fr" gap={1} css={{ paddingLeft: '$1', paddingRight: '$1', flex: 1 }}>
+				<Grid cols={7} rows="fr" gap={1} css={{ padding: '0 $1 $1 $1', flex: 1 }}>
 					{days.map((day) => (
 						<CalendarCell
 							key={day.date}

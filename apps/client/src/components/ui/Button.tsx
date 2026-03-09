@@ -8,9 +8,12 @@ export const Button = styled('button', {
 	fontSize: '$sm',
 	fontWeight: '$medium',
 	cursor: 'pointer',
-	transition: 'background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease',
 	backgroundColor: '$gray100',
 	color: '$gray900',
+
+	display: 'inline-flex',
+	alignItems: 'center',
+	justifyContent: 'center',
 
 	'&:focus-visible': {
 		outline: '2px solid $accent400',
