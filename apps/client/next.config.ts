@@ -1,8 +1,11 @@
 import type { NextConfig } from 'next';
 import path from 'path';
 
+type OutputMode = 'standalone' | 'export' | undefined;
+const outputMode = (process.env.NEXT_OUTPUT as OutputMode) ?? 'standalone';
+
 const nextConfig: NextConfig = {
-	output: 'standalone',
+	output: outputMode,
 	outputFileTracingRoot: path.join(__dirname, '../../'),
 	images: {
 		remotePatterns: [
