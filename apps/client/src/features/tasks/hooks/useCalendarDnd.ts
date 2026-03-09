@@ -40,7 +40,10 @@ export function useCalendarDnd() {
 		let activeTask: Task | null = null;
 		for (const tasks of Object.values(byDate)) {
 			const found = tasks.find((t) => t._id === activeId);
-			if (found) { activeTask = found; break; }
+			if (found) {
+				activeTask = found;
+				break;
+			}
 		}
 		if (!activeTask) return;
 
@@ -48,7 +51,10 @@ export function useCalendarDnd() {
 		let overTask: Task | null = null;
 		for (const tasks of Object.values(byDate)) {
 			const found = tasks.find((t) => t._id === overId);
-			if (found) { overTask = found; break; }
+			if (found) {
+				overTask = found;
+				break;
+			}
 		}
 
 		let targetDate: string;
@@ -67,7 +73,9 @@ export function useCalendarDnd() {
 		if (activeTask.date === targetDate && activeTask.order === targetOrder) return;
 
 		// Update UI immediately, then sync with server
-		dispatch(moveTaskOptimistic({ id: activeId, fromDate: activeTask.date, toDate: targetDate, toOrder: targetOrder }));
+		dispatch(
+			moveTaskOptimistic({ id: activeId, fromDate: activeTask.date, toDate: targetDate, toOrder: targetOrder }),
+		);
 		void dispatch(reorderTask({ id: activeId, dto: { date: targetDate, order: targetOrder } }));
 	}
 

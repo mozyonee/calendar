@@ -1,13 +1,28 @@
+import { Card } from '@/components/ui';
+import { styled } from '@/lib/stitches';
 import type { PublicHoliday } from '@calendar/types';
+
+const Pin = styled(Card, {
+	fontSize: '$xs',
+	fontWeight: '$medium',
+	color: '$emerald700',
+	backgroundColor: '$emerald50',
+	borderRadius: '$md',
+	padding: '$0.5 $1_5',
+	whiteSpace: 'nowrap',
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+	lineHeight: '1.25',
+	marginBottom: '$0.5',
+	userSelect: 'none',
+	border: 'none',
+	boxShadow: 'none',
+});
 
 interface Props {
 	holiday: PublicHoliday;
 }
 
 export function HolidayPin({ holiday }: Props) {
-	return (
-		<div className="text-xs font-medium text-emerald-700 bg-emerald-50 rounded px-1.5 py-0.5 truncate leading-tight mb-0.5 select-none">
-			{holiday.name}
-		</div>
-	);
+	return <Pin>{holiday.name}</Pin>;
 }

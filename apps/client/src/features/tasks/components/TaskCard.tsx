@@ -1,10 +1,100 @@
 'use client';
 
+import { Card, Flex, IconButton, Input } from '@/components/ui';
+import { TASK_COLORS } from '@/features/tasks/lib/taskColors';
+import { styled } from '@/lib/stitches';
 import type { Task, TaskColor } from '@calendar/types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useEffect, useRef, useState } from 'react';
-import { TASK_COLORS, TASK_COLOR_CLASS } from '@/features/tasks/lib/taskColors';
+
+const TaskCardRoot = styled(Card, {
+	marginBottom: '$1_5',
+	variants: {
+		isOverlay: {
+			true: {
+				boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+				transform: 'rotate(1deg)',
+			},
+		},
+		isDragging: {
+			true: {
+				opacity: 0.5,
+			},
+		},
+	},
+
+	compoundVariants: [
+		{
+			isOverlay: true,
+			isDragging: true,
+			css: {
+				boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+			},
+		},
+	],
+});
+
+const ColorDot = styled('button', {
+	height: '0.375rem',
+	width: '1.5rem',
+	borderRadius: '$full',
+	border: 'none',
+	padding: 0,
+	cursor: 'pointer',
+	transition: 'opacity 150ms ease',
+
+	'&:hover': {
+		opacity: 1,
+	},
+
+	variants: {
+		color: {
+			green: { backgroundColor: '$green400' },
+			blue: { backgroundColor: '$sky400' },
+			orange: { backgroundColor: '$amber400' },
+			red: { backgroundColor: '$rose400' },
+			purple: { backgroundColor: '$purple400' },
+		},
+		selected: {
+			true: {
+				boxShadow: '0 0 0 2px $gray400',
+				opacity: 1,
+			},
+			false: {
+				opacity: 0.6,
+			},
+		},
+	},
+});
+
+const InlineInput = styled(Input, {
+	flex: 1,
+	minWidth: 0,
+	background: 'transparent',
+	borderBottom: '1px solid transparent',
+	paddingY: '$0.5',
+
+	'&:focus': {
+		borderBottomColor: '$accent400',
+	},
+});
+
+const RemoveButton = styled(IconButton, {
+	fontSize: '$xs',
+	color: '$gray400',
+	padding: 0,
+
+	'&:hover': {
+		color: '$rose500',
+	},
+});
+
+const Title = styled('p', {
+	fontSize: '$xs',
+	color: '$gray800',
+	lineHeight: 1.2,
+});
 
 interface Props {
 	task: Task;
@@ -42,70 +132,84 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent) {
-		if (e.key === 'Enter') { e.preventDefault(); commitEdit(); }
-		else if (e.key === 'Escape') { setEditValue(task.title); setEditColor(task.color); setIsEditing(false); }
+		if (e.key === 'Enter') {
+			e.preventDefault();
+			commitEdit();
+		} else if (e.key === 'Escape') {
+			setEditValue(task.title);
+			setEditColor(task.color);
+			setIsEditing(false);
+		}
 	}
 
 	if (isDragging && !isDragOverlay) {
-		return (
-			<div
-				ref={setNodeRef}
-				style={style}
-				className="bg-white rounded shadow border border-dashed border-gray-300 opacity-40 mb-1.5 h-10"
-			/>
-		);
+		return <TaskCardRoot ref={setNodeRef} style={style} isDragging isOverlay={false} />;
 	}
 
 	return (
-		<div
+		<TaskCardRoot
 			ref={setNodeRef}
 			style={style}
+			isOverlay={isDragOverlay}
+			isDragging={isDragging}
 			onClick={(e) => e.stopPropagation()}
-			className={`bg-white rounded shadow-sm border border-gray-100 mb-1.5 overflow-hidden ${isDragOverlay ? 'shadow-md rotate-1' : 'hover:shadow-md'} ${isDragging ? 'opacity-50' : ''}`}
 		>
 			{/* Colour label bar */}
-			<div className="flex gap-1 px-1.5 pt-1.5 pb-0.5">
-				{isEditing
-					? TASK_COLORS.map((c) => (
-							<button
-								key={c}
-								type="button"
-								onMouseDown={(e) => { e.preventDefault(); setEditColor(c); }}
-								className={`h-1.5 w-6 rounded-full ${TASK_COLOR_CLASS[c]} ${editColor === c ? 'ring-2 ring-offset-1 ring-gray-400' : 'opacity-60 hover:opacity-100'} transition-all cursor-pointer`}
-							/>
-					  ))
-					: <div className={`h-1.5 w-8 rounded-full ${TASK_COLOR_CLASS[task.color]}`} />
-				}
-			</div>
+			<Flex gap={1} css={{ padding: '$1_5 $1_5 $0.5' }}>
+				{isEditing ? (
+					TASK_COLORS.map((c) => (
+						<ColorDot
+							key={c}
+							color={c}
+							selected={editColor === c}
+							onMouseDown={(e) => {
+								e.preventDefault();
+								setEditColor(c);
+							}}
+						/>
+					))
+				) : (
+					<ColorDot color={task.color} selected />
+				)}
+			</Flex>
 
 			{/* Title / edit input */}
-			<div
-				className="px-1.5 pb-1.5 pt-0.5 cursor-pointer"
+			<Flex
 				{...(!isEditing ? { ...attributes, ...listeners } : {})}
-				onClick={() => { if (!isEditing) setIsEditing(true); }}
+				onClick={() => {
+					if (!isEditing) setIsEditing(true);
+				}}
+				css={{
+					padding: '$1_5 $1_5 $1_5',
+					cursor: 'pointer',
+					'&:focus-within': {
+						outline: 'none',
+					},
+				}}
 			>
 				{isEditing ? (
-					<div className="flex items-center gap-1">
-						<input
+					<Flex align="center" gap={1} css={{ flex: 1 }}>
+						<InlineInput
 							ref={inputRef}
 							value={editValue}
 							onChange={(e) => setEditValue(e.target.value)}
 							onKeyDown={handleKeyDown}
 							onBlur={commitEdit}
-							className="flex-1 min-w-0 text-xs outline-none border-b border-transparent focus:border-accent-400 bg-transparent py-0.5"
 						/>
-						<button
+						<RemoveButton
 							type="button"
-							onMouseDown={(e) => { e.preventDefault(); onRemove(); }}
-							className="text-gray-400 hover:text-red-500 text-xs leading-none"
+							onMouseDown={(e) => {
+								e.preventDefault();
+								onRemove();
+							}}
 						>
 							✕
-						</button>
-					</div>
+						</RemoveButton>
+					</Flex>
 				) : (
-					<p className="text-xs text-gray-800 leading-snug">{task.title}</p>
+					<Title>{task.title}</Title>
 				)}
-			</div>
-		</div>
+			</Flex>
+		</TaskCardRoot>
 	);
 }

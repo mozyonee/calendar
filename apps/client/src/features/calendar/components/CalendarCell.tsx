@@ -1,15 +1,90 @@
 'use client';
 
-import { addTask, editTask, removeTask } from '@/features/tasks/slices/tasksSlice';
+import { Button, Card, Flex } from '@/components/ui';
 import type { CalendarDay } from '@/features/calendar/utils/calendarUtils';
 import { MONTH_NAMES } from '@/features/calendar/utils/calendarUtils';
+import { HolidayPin } from '@/features/tasks/components/HolidayPin';
+import { TaskForm } from '@/features/tasks/components/TaskForm';
+import { TaskList } from '@/features/tasks/components/TaskList';
+import { addTask, editTask, removeTask } from '@/features/tasks/slices/tasksSlice';
+import { styled } from '@/lib/stitches';
 import { useAppDispatch } from '@/store';
 import type { PublicHoliday, Task, TaskColor } from '@calendar/types';
 import { useDroppable } from '@dnd-kit/core';
 import { useState } from 'react';
-import { HolidayPin } from '@/features/tasks/components/HolidayPin';
-import { TaskForm } from '@/features/tasks/components/TaskForm';
-import { TaskList } from '@/features/tasks/components/TaskList';
+
+const Container = styled(Card, {
+	minHeight: '8rem',
+	padding: '$3',
+	display: 'flex',
+	flexDirection: 'column',
+	transition: 'background 150ms ease',
+	borderRadius: '$lg',
+	borderColor: 'transparent',
+	boxShadow: 'none',
+
+	variants: {
+		currentMonth: {
+			true: { backgroundColor: '$gray100' },
+			false: { backgroundColor: '$gray50' },
+		},
+		isToday: {
+			true: { boxShadow: 'inset 0 0 0 2px $accent400' },
+		},
+		isOver: {
+			true: { backgroundColor: '$accent50' },
+		},
+	},
+});
+
+const DayNumber = styled('span', {
+	fontSize: '$sm',
+	fontWeight: '$semibold',
+	lineHeight: 1,
+	variants: {
+		currentMonth: {
+			true: { color: '$gray800' },
+			false: { color: '$gray400' },
+		},
+		isToday: {
+			true: { color: '$accent600' },
+		},
+	},
+});
+
+const MonthAbbr = styled('span', {
+	fontSize: '$xs',
+	color: '$gray400',
+	marginRight: '$0.5',
+});
+
+const TaskCount = styled('span', {
+	fontSize: '$xs',
+	color: '$gray400',
+});
+
+const AddTaskButton = styled(Button, {
+	fontSize: '$xs',
+	color: '$gray400',
+	textAlign: 'left',
+	width: '100%',
+	paddingLeft: '$1',
+	marginTop: '$1',
+	opacity: 0,
+	transition: 'opacity 150ms ease, color 150ms ease',
+	background: 'transparent',
+
+	'&:hover': {
+		color: '$accent500',
+		opacity: 1,
+	},
+});
+
+const Cell = styled(Container, {
+	'&:hover button': {
+		opacity: 1,
+	},
+});
 
 interface Props {
 	day: CalendarDay;
@@ -40,32 +115,25 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 	const taskCount = tasks.length;
 
 	return (
-		<div
-			ref={setNodeRef}
-			className={`min-h-32 p-3 flex flex-col transition-colors rounded-lg
-				${day.isCurrentMonth ? 'bg-gray-100' : 'bg-gray-50'}
-				${day.isToday ? 'ring-2 ring-inset ring-accent-400' : ''}
-				${isOver ? 'bg-accent-50' : ''}
-			`}
-		>
+		<Cell ref={setNodeRef} currentMonth={day.isCurrentMonth} isToday={day.isToday} isOver={isOver}>
 			{/* Header */}
-			<div className="flex items-center gap-1 mb-1 select-none">
-				<span
-					className={`text-sm font-semibold leading-none
-						${day.isCurrentMonth ? (day.isToday ? 'text-accent-600' : 'text-gray-800') : 'text-gray-400'}
-					`}
-				>
-					{day.isCurrentMonth ? day.dayNumber : (
+			<Flex align="center" gap={1} css={{ marginBottom: '$1', userSelect: 'none' }}>
+				<DayNumber currentMonth={day.isCurrentMonth} isToday={day.isToday}>
+					{day.isCurrentMonth ? (
+						day.dayNumber
+					) : (
 						<>
-							<span className="text-xs text-gray-400 mr-0.5">{monthAbbr}</span>
+							<MonthAbbr>{monthAbbr}</MonthAbbr>
 							{day.dayNumber}
 						</>
 					)}
-				</span>
+				</DayNumber>
 				{taskCount > 0 && (
-					<span className="text-xs text-gray-400">{taskCount} {taskCount === 1 ? 'card' : 'cards'}</span>
+					<TaskCount>
+						{taskCount} {taskCount === 1 ? 'card' : 'cards'}
+					</TaskCount>
 				)}
-			</div>
+			</Flex>
 
 			{/* Holidays (fixed, non-draggable) */}
 			{holidays.map((h) => (
@@ -73,25 +141,25 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 			))}
 
 			{/* Tasks */}
-			<div className="flex-1" onClick={() => setIsAdding(true)}>
+			<Flex flex={1} onClick={() => setIsAdding(true)}>
 				<TaskList tasks={tasks} onEdit={handleEditTask} onRemove={handleRemoveTask} />
-			</div>
+			</Flex>
 
 			{/* Inline add form */}
-			{isAdding && (
-				<TaskForm onSubmit={handleAddTask} onCancel={() => setIsAdding(false)} />
-			)}
+			{isAdding && <TaskForm onSubmit={handleAddTask} onCancel={() => setIsAdding(false)} />}
 
 			{/* Add task affordance */}
 			{!isAdding && day.isCurrentMonth && (
-				<button
+				<AddTaskButton
 					type="button"
-					onClick={(e) => { e.stopPropagation(); setIsAdding(true); }}
-					className="text-xs text-gray-400 hover:text-accent-500 mt-1 text-left w-full px-0.5 opacity-0 hover:opacity-100 transition-opacity group-hover:opacity-100 cursor-pointer"
+					onClick={(e) => {
+						e.stopPropagation();
+						setIsAdding(true);
+					}}
 				>
 					+ Add task
-				</button>
+				</AddTaskButton>
 			)}
-		</div>
+		</Cell>
 	);
 }

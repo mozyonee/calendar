@@ -1,12 +1,25 @@
 'use client';
 
+import { Flex, Grid } from '@/components/ui';
 import type { CalendarDay } from '@/features/calendar/utils/calendarUtils';
 import { DAY_NAMES } from '@/features/calendar/utils/calendarUtils';
 import { TaskCard } from '@/features/tasks/components/TaskCard';
 import { useCalendarDnd } from '@/features/tasks/hooks/useCalendarDnd';
+import { styled } from '@/lib/stitches';
 import type { PublicHoliday, Task } from '@calendar/types';
 import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { CalendarCell } from './CalendarCell';
+
+const Weekday = styled('div', {
+	paddingTop: '$2',
+	paddingBottom: '$2',
+	textAlign: 'center',
+	fontSize: '$xs',
+	fontWeight: '$medium',
+	color: '$gray500',
+	textTransform: 'uppercase',
+	letterSpacing: '0.08em',
+});
 
 interface Props {
 	days: CalendarDay[];
@@ -19,18 +32,16 @@ export function CalendarGrid({ days, tasksByDate, holidaysByDate }: Props) {
 
 	return (
 		<DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-			<div className="flex flex-col flex-1 overflow-hidden">
+			<Flex direction="column" flex={1} css={{ overflow: 'hidden' }}>
 				{/* Day-of-week header */}
-				<div className="grid grid-cols-7">
+				<Grid cols={7}>
 					{DAY_NAMES.map((name) => (
-						<div key={name} className="py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wide">
-							{name}
-						</div>
+						<Weekday key={name}>{name}</Weekday>
 					))}
-				</div>
+				</Grid>
 
 				{/* Calendar grid */}
-				<div className="px-1 grid grid-cols-7 flex-1 auto-rows-fr gap-1">
+				<Grid cols={7} rows="fr" gap={1} css={{ paddingLeft: '$1', paddingRight: '$1', flex: 1 }}>
 					{days.map((day) => (
 						<CalendarCell
 							key={day.date}
@@ -39,18 +50,11 @@ export function CalendarGrid({ days, tasksByDate, holidaysByDate }: Props) {
 							holidays={holidaysByDate[day.date] ?? []}
 						/>
 					))}
-				</div>
-			</div>
+				</Grid>
+			</Flex>
 
 			<DragOverlay>
-				{activeTask && (
-					<TaskCard
-						task={activeTask}
-						onEdit={() => {}}
-						onRemove={() => {}}
-						isDragOverlay
-					/>
-				)}
+				{activeTask && <TaskCard task={activeTask} onEdit={() => {}} onRemove={() => {}} isDragOverlay />}
 			</DragOverlay>
 		</DndContext>
 	);

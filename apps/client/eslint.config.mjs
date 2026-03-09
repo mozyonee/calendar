@@ -2,7 +2,7 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-	{ ignores: ['eslint.config.mjs', 'postcss.config.mjs', '.next/**', 'public/**', 'node_modules/**'] },
+	{ ignores: ['eslint.config.mjs', 'postcss.config.mjs', '.next/**', 'out/**', 'public/**', 'node_modules/**'] },
 	eslint.configs.recommended,
 	...tseslint.configs.recommendedTypeChecked,
 	{

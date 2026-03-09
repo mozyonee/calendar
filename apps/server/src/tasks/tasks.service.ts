@@ -14,7 +14,11 @@ export class TasksService {
 		const pad = (n: number) => String(n).padStart(2, '0');
 		const from = `${year}-${pad(month)}-01`;
 		const to = `${year}-${pad(month)}-31`;
-		return this.taskModel.find({ date: { $gte: from, $lte: to } }).sort({ date: 1, order: 1 }).lean().exec();
+		return this.taskModel
+			.find({ date: { $gte: from, $lte: to } })
+			.sort({ date: 1, order: 1 })
+			.lean()
+			.exec();
 	}
 
 	async create(dto: CreateTaskDto): Promise<Task> {
@@ -49,9 +53,7 @@ export class TasksService {
 
 		const insertAt = Math.min(newOrder, siblings.length);
 		await Promise.all(
-			siblings.map((t, i) =>
-				this.taskModel.updateOne({ _id: t._id }, { order: i < insertAt ? i : i + 1 }),
-			),
+			siblings.map((t, i) => this.taskModel.updateOne({ _id: t._id }, { order: i < insertAt ? i : i + 1 })),
 		);
 
 		task.date = newDate;
@@ -59,7 +61,11 @@ export class TasksService {
 		await task.save();
 
 		const affectedDates = oldDate !== newDate ? [oldDate, newDate] : [newDate];
-		return this.taskModel.find({ date: { $in: affectedDates } }).sort({ date: 1, order: 1 }).lean().exec();
+		return this.taskModel
+			.find({ date: { $in: affectedDates } })
+			.sort({ date: 1, order: 1 })
+			.lean()
+			.exec();
 	}
 
 	async remove(id: string): Promise<void> {
@@ -69,9 +75,7 @@ export class TasksService {
 	}
 
 	private async compactDate(date: string, excludeId: string | null): Promise<void> {
-		const query = excludeId
-			? { date, _id: { $ne: excludeId } }
-			: { date };
+		const query = excludeId ? { date, _id: { $ne: excludeId } } : { date };
 		const tasks = await this.taskModel.find(query).sort({ order: 1 }).exec();
 		await Promise.all(tasks.map((t, i) => this.taskModel.updateOne({ _id: t._id }, { order: i })));
 	}

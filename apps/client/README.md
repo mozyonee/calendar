@@ -31,8 +31,8 @@ Then open http://localhost:3000.
 
 Create a `.env.local` in `apps/client` (already present as `.env.example`).
 
-| Variable | Default | Description |
-|---------|---------|-------------|
+| Variable                 | Default                 | Description      |
+| ------------------------ | ----------------------- | ---------------- |
 | `NEXT_PUBLIC_SERVER_URL` | `http://localhost:3001` | Backend base URL |
 
 ## ✅ Build

@@ -22,22 +22,17 @@ export const fetchTasksForMonth = createAsyncThunk(
 
 export const addTask = createAsyncThunk('tasks/add', (dto: CreateTaskDto) => taskApi.create(dto));
 
-export const editTask = createAsyncThunk(
-	'tasks/edit',
-	({ id, dto }: { id: string; dto: UpdateTaskDto }) => taskApi.update(id, dto),
+export const editTask = createAsyncThunk('tasks/edit', ({ id, dto }: { id: string; dto: UpdateTaskDto }) =>
+	taskApi.update(id, dto),
 );
 
-export const removeTask = createAsyncThunk(
-	'tasks/remove',
-	async ({ id, date }: { id: string; date: string }) => {
-		await taskApi.remove(id);
-		return { id, date };
-	},
-);
+export const removeTask = createAsyncThunk('tasks/remove', async ({ id, date }: { id: string; date: string }) => {
+	await taskApi.remove(id);
+	return { id, date };
+});
 
-export const reorderTask = createAsyncThunk(
-	'tasks/reorder',
-	({ id, dto }: { id: string; dto: ReorderTaskDto }) => taskApi.reorder(id, dto),
+export const reorderTask = createAsyncThunk('tasks/reorder', ({ id, dto }: { id: string; dto: ReorderTaskDto }) =>
+	taskApi.reorder(id, dto),
 );
 
 function normalizeTasks(tasks: Task[]): Record<string, Task[]> {
@@ -70,7 +65,9 @@ const tasksSlice = createSlice({
 			const [task] = fromTasks.splice(taskIdx, 1);
 
 			// Recompact source
-			fromTasks.forEach((t, i) => { t.order = i; });
+			fromTasks.forEach((t, i) => {
+				t.order = i;
+			});
 			state.byDate[fromDate] = fromTasks;
 
 			// Insert into target
@@ -80,7 +77,9 @@ const tasksSlice = createSlice({
 			task.date = toDate;
 			task.order = clamped;
 			toTasks.splice(clamped, 0, task);
-			toTasks.forEach((t, i) => { t.order = i; });
+			toTasks.forEach((t, i) => {
+				t.order = i;
+			});
 		},
 	},
 	extraReducers: (builder) => {
@@ -132,16 +131,13 @@ export default tasksSlice.reducer;
 const selectTasksByDate = (state: RootState) => state.tasks.byDate;
 const selectSearchQuery = (state: RootState) => state.calendar.searchQuery;
 
-export const selectFilteredTasksByDate = createSelector(
-	[selectTasksByDate, selectSearchQuery],
-	(byDate, query) => {
-		if (!query.trim()) return byDate;
-		const q = query.toLowerCase();
-		const filtered: Record<string, Task[]> = {};
-		for (const [date, tasks] of Object.entries(byDate)) {
-			const matching = tasks.filter((t) => t.title.toLowerCase().includes(q));
-			filtered[date] = matching;
-		}
-		return filtered;
-	},
-);
+export const selectFilteredTasksByDate = createSelector([selectTasksByDate, selectSearchQuery], (byDate, query) => {
+	if (!query.trim()) return byDate;
+	const q = query.toLowerCase();
+	const filtered: Record<string, Task[]> = {};
+	for (const [date, tasks] of Object.entries(byDate)) {
+		const matching = tasks.filter((t) => t.title.toLowerCase().includes(q));
+		filtered[date] = matching;
+	}
+	return filtered;
+});

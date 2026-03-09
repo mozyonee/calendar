@@ -1,12 +1,19 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { fetchTasksForMonth, selectFilteredTasksByDate } from '@/features/tasks/slices/tasksSlice';
-import { fetchHolidaysForYear } from '@/features/tasks/slices/holidaysSlice';
+import { Flex } from '@/components/ui';
 import { buildCalendarGrid } from '@/features/calendar/utils/calendarUtils';
-import { CalendarHeader } from './CalendarHeader';
+import { fetchHolidaysForYear } from '@/features/tasks/slices/holidaysSlice';
+import { fetchTasksForMonth, selectFilteredTasksByDate } from '@/features/tasks/slices/tasksSlice';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { useEffect } from 'react';
 import { CalendarGrid } from './CalendarGrid';
+import { CalendarHeader } from './CalendarHeader';
+
+const Page = ({ children }: { children: React.ReactNode }) => (
+	<Flex direction="column" css={{ height: '100vh', backgroundColor: '$white' }}>
+		{children}
+	</Flex>
+);
 
 export function CalendarPage() {
 	const dispatch = useAppDispatch();
@@ -26,15 +33,11 @@ export function CalendarPage() {
 	const days = buildCalendarGrid(year, month);
 
 	return (
-		<div className="flex flex-col h-screen bg-white">
+		<Page>
 			<CalendarHeader />
-			<div className="flex-1 overflow-auto">
-				<CalendarGrid
-					days={days}
-					tasksByDate={filteredTasksByDate}
-					holidaysByDate={holidaysByDate}
-				/>
-			</div>
-		</div>
+			<Flex flex={1} css={{ overflow: 'auto' }}>
+				<CalendarGrid days={days} tasksByDate={filteredTasksByDate} holidaysByDate={holidaysByDate} />
+			</Flex>
+		</Page>
 	);
 }

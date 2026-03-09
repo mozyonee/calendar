@@ -21,11 +21,11 @@ When rules conflict, follow this order:
 
 **Definition: Same approach = same method, tool, or fix strategy category**
 
-| Condition | Required Action |
-|----------|-----------------|
-| Approach failed once | Re-evaluate assumptions and environment |
+| Condition                  | Required Action                         |
+| -------------------------- | --------------------------------------- |
+| Approach failed once       | Re-evaluate assumptions and environment |
 | Same approach failed twice | **Prohibited** from retrying variations |
-| After 2 failures | Must switch to investigation mode |
+| After 2 failures           | Must switch to investigation mode       |
 
 **Investigation Mode Requires:**
 
@@ -53,11 +53,11 @@ If none are confirmed → continue investigation.
 
 When required information is missing:
 
-| Situation | Action |
-|-----------|--------|
-| Documentation exists | Use WebSearch |
-| Project-specific data needed | Use MCP servers |
-| Code behavior unclear | Read files / search codebase |
+| Situation                              | Action                                 |
+| -------------------------------------- | -------------------------------------- |
+| Documentation exists                   | Use WebSearch                          |
+| Project-specific data needed           | Use MCP servers                        |
+| Code behavior unclear                  | Read files / search codebase           |
 | After all tools used and still unclear | State uncertainty and explain attempts |
 
 **Guessing is not allowed.**
@@ -103,14 +103,14 @@ Then:
 
 All edits must follow:
 
-| Rule | Requirement |
-|------|-------------|
-| Indentation | Tabs only (`\t`), width = 4 |
-| Line width | Max 120 chars |
-| Formatting | Run project formatter after changes |
-| Style | Match surrounding file exactly |
-| Code quality | Prefer clarity over cleverness |
-| Comments | Follow Section 6.1 below |
+| Rule         | Requirement                         |
+| ------------ | ----------------------------------- |
+| Indentation  | Tabs only (`\t`), width = 4         |
+| Line width   | Max 120 chars                       |
+| Formatting   | Run project formatter after changes |
+| Style        | Match surrounding file exactly      |
+| Code quality | Prefer clarity over cleverness      |
+| Comments     | Follow Section 6.1 below            |
 
 ### 6.1. COMMENTING STANDARDS
 
@@ -177,26 +177,26 @@ If any condition is false → switch to investigation.
 
 ## 8. TOOL USAGE TRIGGERS
 
-| Tool | Use When |
-|------|----------|
-| WebSearch | Documentation, version behavior, libraries |
+| Tool        | Use When                                        |
+| ----------- | ----------------------------------------------- |
+| WebSearch   | Documentation, version behavior, libraries      |
 | MCP servers | Documentation, Authenticated/project-bound data |
-| Read/Grep | Codebase structure or logic |
-| Logs | Runtime/system issues |
+| Read/Grep   | Codebase structure or logic                     |
+| Logs        | Runtime/system issues                           |
 
 **MCP Priority Rule:**
 
 Always prefer MCP tools over CLI equivalents. Never fall back to CLI if an MCP can do the same thing.
 
-| Task | Use MCP | Never use |
-|------|---------|-----------|
-| GitHub PRs, issues, branches, code search | `mcp__github__*` | `gh` CLI |
-| Railway deploy, logs, services, variables | `mcp__railway__*` | `railway` CLI |
-| Vercel deploy, projects, logs | `mcp__claude_ai_Vercel__*` | `vercel` CLI |
-| Library documentation | `mcp__context7__*` | WebSearch alone |
-| Browser automation, screenshots, network | `mcp__chrome-devtools__*` | — |
-| Next.js docs, upgrades, browser eval | `mcp__next-devtools__*` | — |
-| MongoDB queries, collections, documents | `mcp__mongodb__*` | `mongosh` CLI |
+| Task                                      | Use MCP                    | Never use       |
+| ----------------------------------------- | -------------------------- | --------------- |
+| GitHub PRs, issues, branches, code search | `mcp__github__*`           | `gh` CLI        |
+| Railway deploy, logs, services, variables | `mcp__railway__*`          | `railway` CLI   |
+| Vercel deploy, projects, logs             | `mcp__claude_ai_Vercel__*` | `vercel` CLI    |
+| Library documentation                     | `mcp__context7__*`         | WebSearch alone |
+| Browser automation, screenshots, network  | `mcp__chrome-devtools__*`  | —               |
+| Next.js docs, upgrades, browser eval      | `mcp__next-devtools__*`    | —               |
+| MongoDB queries, collections, documents   | `mcp__mongodb__*`          | `mongosh` CLI   |
 
 ---
 

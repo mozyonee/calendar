@@ -27,11 +27,11 @@ The server defaults to `http://localhost:3001`.
 
 Create a `.env.local` in `apps/server` (already present as `.env.example`).
 
-| Variable | Default | Description |
-|---------|---------|-------------|
+| Variable      | Default    | Description               |
+| ------------- | ---------- | ------------------------- |
 | `MONGODB_URI` | (required) | MongoDB connection string |
-| `CLIENT_URL` | (required) | Client URL for CORS |
-| `PORT` | `3001` | Server port |
+| `CLIENT_URL`  | (required) | Client URL for CORS       |
+| `PORT`        | `3001`     | Server port               |
 
 ## ✅ Build
 

@@ -5,6 +5,7 @@ This file provides guidance to AI Agents when working with code in this reposito
 ## Commands
 
 ### Root (run from `/`)
+
 ```bash
 npm run dev:client       # Start Next.js client (port 3000)
 npm run dev:server       # Start NestJS server (port 3001)
@@ -16,6 +17,7 @@ npm run format           # Prettier format all files
 ```
 
 ### Client (`apps/client`)
+
 ```bash
 npm run dev              # Next.js dev + TypeScript watch in parallel
 npm run test             # Jest (passWithNoTests)
@@ -23,6 +25,7 @@ npm run typecheck        # tsc --noEmit
 ```
 
 ### Server (`apps/server`)
+
 ```bash
 npm run dev              # NestJS watch mode
 npm run test             # Jest (spec files)
@@ -31,6 +34,7 @@ npm run test:cov         # Jest with coverage
 ```
 
 ### Types package (`packages/types`)
+
 ```bash
 npm run build            # tsc -b (must build before client/server can use it)
 ```
@@ -46,6 +50,7 @@ This is an npm workspaces monorepo with three packages:
 ### Server
 
 NestJS app with two feature modules:
+
 - **`tasks/`** — CRUD + reorder for tasks, backed by MongoDB (Mongoose). Tasks are stored with a `date: "YYYY-MM-DD"` field and an `order: number` for per-day ordering. Reorder endpoint updates sibling orders atomically and returns all affected tasks.
 - **`holidays/`** — Proxies `https://date.nager.at/api/v3/PublicHolidays/{year}/{countryCode}`, caches in-memory per year+country.
 
@@ -54,6 +59,7 @@ Environment variables: `MONGODB_URI`, `CLIENT_URL`, `PORT` (default 3001). Loade
 ### Client
 
 Feature-based structure under `src/`:
+
 - `features/calendar/` — calendar navigation UI, CalendarGrid/Cell/Header components, DnD wiring
 - `features/tasks/` — task components (TaskCard, TaskForm, TaskList), hooks (`useCalendarDnd`), API calls (`taskApi`, `holidayApi`)
 - `store/` — Redux store with three slices: `calendar` (month/year nav, search query), `tasks` (byDate map, async thunks), `holidays`

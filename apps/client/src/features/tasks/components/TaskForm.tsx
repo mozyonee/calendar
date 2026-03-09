@@ -1,5 +1,6 @@
 'use client';
 
+import { Flex, Input } from '@/components/ui';
 import { useEffect, useRef, useState } from 'react';
 
 interface Props {
@@ -26,8 +27,8 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
 	}
 
 	return (
-		<div className="mt-1 px-0.5">
-			<input
+		<Flex direction="column" css={{ marginTop: '$1', paddingLeft: '$0.5', paddingRight: '$0.5' }}>
+			<Input
 				ref={inputRef}
 				value={value}
 				onChange={(e) => setValue(e.target.value)}
@@ -38,8 +39,7 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
 					else onCancel();
 				}}
 				placeholder="Task name…"
-				className="w-full text-xs border border-accent-400 rounded px-1.5 py-1 outline-none focus:ring-1 focus:ring-accent-400 bg-white"
 			/>
-		</div>
+		</Flex>
 	);
 }

@@ -2,10 +2,10 @@ import type { TaskColor } from '@calendar/types';
 
 export const TASK_COLORS: TaskColor[] = ['green', 'blue', 'orange', 'red', 'purple'];
 
-export const TASK_COLOR_CLASS: Record<TaskColor, string> = {
-	green: 'bg-green-400',
-	blue: 'bg-sky-400',
-	orange: 'bg-amber-400',
-	red: 'bg-rose-400',
-	purple: 'bg-accent-500',
+export const TASK_COLOR_TOKEN: Record<TaskColor, string> = {
+	green: '$green400',
+	blue: '$sky400',
+	orange: '$amber400',
+	red: '$rose400',
+	purple: '$purple400',
 };
