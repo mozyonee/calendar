@@ -7,7 +7,7 @@
     "dev:next": "next dev -H 0.0.0.0 -p 3000 --webpack",
     "dev:ts": "tsc --noEmit --watch --preserveWatchOutput",
     "build": "next build --webpack",
-    "start": "HOSTNAME=0.0.0.0 PORT=${PORT:-3000} node .next/standalone/apps/client/server.js",
+    "start": "next start",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint --fix",
