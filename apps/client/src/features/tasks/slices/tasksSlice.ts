@@ -1,7 +1,7 @@
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { Task, CreateTaskDto, UpdateTaskDto, ReorderTaskDto } from '@calendar/types';
-import { taskApi } from '@/lib/taskApi';
-import type { RootState } from './index';
+import { taskApi } from '@/features/tasks/lib/taskApi';
+import type { RootState } from '@/store';
 
 interface TasksState {
 	byDate: Record<string, Task[]>;
@@ -46,7 +46,6 @@ function normalizeTasks(tasks: Task[]): Record<string, Task[]> {
 		if (!byDate[task.date]) byDate[task.date] = [];
 		byDate[task.date].push(task);
 	}
-	// Ensure sorted by order within each date
 	for (const date of Object.keys(byDate)) {
 		byDate[date].sort((a, b) => a.order - b.order);
 	}
@@ -56,7 +55,34 @@ function normalizeTasks(tasks: Task[]): Record<string, Task[]> {
 const tasksSlice = createSlice({
 	name: 'tasks',
 	initialState,
-	reducers: {},
+	reducers: {
+		// Optimistic move: update Redux state immediately on drag end
+		moveTaskOptimistic(
+			state,
+			action: PayloadAction<{ id: string; fromDate: string; toDate: string; toOrder: number }>,
+		) {
+			const { id, fromDate, toDate, toOrder } = action.payload;
+
+			// Remove from source
+			const fromTasks = state.byDate[fromDate] ?? [];
+			const taskIdx = fromTasks.findIndex((t) => t._id === id);
+			if (taskIdx === -1) return;
+			const [task] = fromTasks.splice(taskIdx, 1);
+
+			// Recompact source
+			fromTasks.forEach((t, i) => { t.order = i; });
+			state.byDate[fromDate] = fromTasks;
+
+			// Insert into target
+			if (!state.byDate[toDate]) state.byDate[toDate] = [];
+			const toTasks = state.byDate[toDate];
+			const clamped = Math.min(toOrder, toTasks.length);
+			task.date = toDate;
+			task.order = clamped;
+			toTasks.splice(clamped, 0, task);
+			toTasks.forEach((t, i) => { t.order = i; });
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchTasksForMonth.pending, (state) => {
@@ -90,7 +116,7 @@ const tasksSlice = createSlice({
 				}
 			})
 			.addCase(reorderTask.fulfilled, (state, action) => {
-				// Server returns all tasks for affected dates; replace them
+				// Reconcile with authoritative server state
 				const updated = normalizeTasks(action.payload);
 				for (const [date, tasks] of Object.entries(updated)) {
 					state.byDate[date] = tasks;
@@ -99,6 +125,7 @@ const tasksSlice = createSlice({
 	},
 });
 
+export const { moveTaskOptimistic } = tasksSlice.actions;
 export default tasksSlice.reducer;
 
 // Selectors

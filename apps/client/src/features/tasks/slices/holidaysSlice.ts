@@ -1,18 +1,18 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { holidayApi } from '@/features/tasks/lib/holidayApi';
 import type { PublicHoliday } from '@calendar/types';
-import { holidayApi } from '@/lib/holidayApi';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface HolidaysState {
 	byDate: Record<string, PublicHoliday[]>;
 	countryCode: string;
-	fetchedYears: number[];
+	fetchedKeys: string[]; // "YYYY-CC"
 	status: 'idle' | 'loading' | 'succeeded' | 'failed';
 }
 
 const initialState: HolidaysState = {
 	byDate: {},
-	countryCode: 'US',
-	fetchedYears: [],
+	countryCode: 'UA',
+	fetchedKeys: [],
 	status: 'idle',
 };
 
@@ -22,8 +22,7 @@ export const fetchHolidaysForYear = createAsyncThunk(
 	{
 		condition: ({ year, countryCode }, { getState }) => {
 			const state = getState() as { holidays: HolidaysState };
-			// Skip if already fetched for this year/country
-			return !(state.holidays.fetchedYears.includes(year) && state.holidays.countryCode === countryCode);
+			return !state.holidays.fetchedKeys.includes(`${year}-${countryCode}`);
 		},
 	},
 );
@@ -31,23 +30,30 @@ export const fetchHolidaysForYear = createAsyncThunk(
 const holidaysSlice = createSlice({
 	name: 'holidays',
 	initialState,
-	reducers: {},
+	reducers: {
+		setCountryCode(state, action: PayloadAction<string>) {
+			state.countryCode = action.payload;
+			state.byDate = {};
+			state.fetchedKeys = [];
+			state.status = 'idle';
+		},
+	},
 	extraReducers: (builder) => {
 		builder
+			.addCase(fetchHolidaysForYear.pending, (state) => {
+				state.status = 'loading';
+			})
 			.addCase(fetchHolidaysForYear.fulfilled, (state, action) => {
 				state.status = 'succeeded';
-				const year = action.meta.arg.year;
-				if (!state.fetchedYears.includes(year)) state.fetchedYears.push(year);
+				const { year, countryCode } = action.meta.arg;
+				const key = `${year}-${countryCode}`;
+				if (!state.fetchedKeys.includes(key)) state.fetchedKeys.push(key);
 				for (const holiday of action.payload) {
 					if (!state.byDate[holiday.date]) state.byDate[holiday.date] = [];
-					// Avoid duplicates
 					if (!state.byDate[holiday.date].some((h) => h.name === holiday.name)) {
 						state.byDate[holiday.date].push(holiday);
 					}
 				}
-			})
-			.addCase(fetchHolidaysForYear.pending, (state) => {
-				state.status = 'loading';
 			})
 			.addCase(fetchHolidaysForYear.rejected, (state) => {
 				state.status = 'failed';
@@ -55,4 +61,5 @@ const holidaysSlice = createSlice({
 	},
 });
 
+export const { setCountryCode } = holidaysSlice.actions;
 export default holidaysSlice.reducer;

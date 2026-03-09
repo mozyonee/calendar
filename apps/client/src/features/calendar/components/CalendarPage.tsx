@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { fetchTasksForMonth, selectFilteredTasksByDate } from '@/store/tasksSlice';
-import { fetchHolidaysForYear } from '@/store/holidaysSlice';
-import { buildCalendarGrid } from '@/lib/calendarUtils';
+import { fetchTasksForMonth, selectFilteredTasksByDate } from '@/features/tasks/slices/tasksSlice';
+import { fetchHolidaysForYear } from '@/features/tasks/slices/holidaysSlice';
+import { buildCalendarGrid } from '@/features/calendar/utils/calendarUtils';
 import { CalendarHeader } from './CalendarHeader';
 import { CalendarGrid } from './CalendarGrid';
 
@@ -26,7 +26,7 @@ export function CalendarPage() {
 	const days = buildCalendarGrid(year, month);
 
 	return (
-		<div className="flex flex-col h-screen bg-gray-100">
+		<div className="flex flex-col h-screen bg-white">
 			<CalendarHeader />
 			<div className="flex-1 overflow-auto">
 				<CalendarGrid

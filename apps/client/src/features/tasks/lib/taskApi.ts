@@ -1,5 +1,5 @@
 import type { Task, CreateTaskDto, UpdateTaskDto, ReorderTaskDto } from '@calendar/types';
-import api from './api';
+import api from '@/lib/api';
 
 export const taskApi = {
 	fetchByMonth: (year: number, month: number) =>

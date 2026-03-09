@@ -34,11 +34,16 @@ const calendarSlice = createSlice({
 				state.month += 1;
 			}
 		},
+		goToToday(state) {
+			const now = new Date();
+			state.year = now.getFullYear();
+			state.month = now.getMonth() + 1;
+		},
 		setSearchQuery(state, action: PayloadAction<string>) {
 			state.searchQuery = action.payload;
 		},
 	},
 });
 
-export const { prevMonth, nextMonth, setSearchQuery } = calendarSlice.actions;
+export const { prevMonth, nextMonth, goToToday, setSearchQuery } = calendarSlice.actions;
 export default calendarSlice.reducer;

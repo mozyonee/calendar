@@ -1,9 +1,9 @@
 'use client';
 
-import { useAppDispatch, useAppSelector } from '@/store';
-import { prevMonth, nextMonth, setSearchQuery } from '@/store/calendarSlice';
-import { MONTH_NAMES } from '@/lib/calendarUtils';
+import { goToToday, nextMonth, prevMonth, setSearchQuery } from '@/features/calendar/slices/calendarSlice';
+import { MONTH_NAMES } from '@/features/calendar/utils/calendarUtils';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { useEffect, useState } from 'react';
 
 export function CalendarHeader() {
@@ -17,13 +17,20 @@ export function CalendarHeader() {
 	}, [debouncedSearch, dispatch]);
 
 	return (
-		<div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white">
+		<div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-gray-200 bg-accent-500 text-white max-sm:flex-col">
 			{/* Navigation */}
 			<div className="flex items-center gap-2">
 				<button
 					type="button"
+					onClick={() => dispatch(goToToday())}
+					className="px-3 py-1 text-sm font-medium rounded hover:bg-gray-300/75 transition-colors cursor-pointer"
+				>
+					Today
+				</button>
+				<button
+					type="button"
 					onClick={() => dispatch(prevMonth())}
-					className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-600"
+					className="p-1.5 rounded hover:bg-gray-300/75 transition-colors cursor-pointer"
 					aria-label="Previous month"
 				>
 					<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +40,7 @@ export function CalendarHeader() {
 				<button
 					type="button"
 					onClick={() => dispatch(nextMonth())}
-					className="p-1.5 rounded hover:bg-gray-100 transition-colors text-gray-600"
+					className="p-1.5 rounded hover:bg-gray-300/75 transition-colors cursor-pointer"
 					aria-label="Next month"
 				>
 					<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -43,14 +50,14 @@ export function CalendarHeader() {
 			</div>
 
 			{/* Title */}
-			<h1 className="text-lg font-semibold text-gray-800">
+			<h1 className="text-lg font-semibold">
 				{MONTH_NAMES[month - 1]} {year}
 			</h1>
 
 			{/* Search */}
 			<div className="relative">
 				<svg
-					className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"
+					className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2"
 					fill="none"
 					stroke="currentColor"
 					viewBox="0 0 24 24"
@@ -62,7 +69,7 @@ export function CalendarHeader() {
 					placeholder="Search tasks…"
 					value={searchValue}
 					onChange={(e) => setSearchValue(e.target.value)}
-					className="pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 w-48 transition-all"
+					className="pl-8 pr-3 py-1.5 text-sm border border-accent-200 rounded-lg outline-none focus:ring-2 focus:ring-accent-200 focus:border-accent-400 w-48 transition-all placeholder:text-white/60 text-white bg-accent-600"
 				/>
 			</div>
 		</div>

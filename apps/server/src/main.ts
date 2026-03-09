@@ -1,21 +1,20 @@
-import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
-import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
+	const config = app.get(ConfigService);
 
-	app.use(cookieParser());
 	app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 	app.enableCors({
-		origin: process.env.CLIENT_URL,
+		origin: config.get<string>('CLIENT_URL'),
 		credentials: true,
 	});
 
-	const port = process.env.PORT ?? 3001;
+	const port = config.get<number>('PORT', 3001);
 	await app.listen(port, '0.0.0.0');
-	console.log(`Server running on port ${port}`);
 }
 
 void bootstrap();

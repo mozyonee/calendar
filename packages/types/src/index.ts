@@ -18,7 +18,6 @@ export interface CreateTaskDto {
 
 export interface UpdateTaskDto {
 	title?: string;
-	date?: string;
 	color?: TaskColor;
 }
 

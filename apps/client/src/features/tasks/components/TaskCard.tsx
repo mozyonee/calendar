@@ -1,19 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import type { Task, TaskColor } from '@calendar/types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type { Task, TaskColor } from '@calendar/types';
-
-const COLOR_MAP: Record<TaskColor, string> = {
-	green: 'bg-green-400',
-	blue: 'bg-blue-500',
-	orange: 'bg-orange-400',
-	red: 'bg-red-400',
-	purple: 'bg-purple-500',
-};
-
-const COLORS: TaskColor[] = ['green', 'blue', 'orange', 'red', 'purple'];
+import { useEffect, useRef, useState } from 'react';
+import { TASK_COLORS, TASK_COLOR_CLASS } from '@/features/tasks/lib/taskColors';
 
 interface Props {
 	task: Task;
@@ -60,7 +51,7 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 			<div
 				ref={setNodeRef}
 				style={style}
-				className="bg-white rounded shadow border border-dashed border-gray-300 opacity-40 mb-1.5 h-12"
+				className="bg-white rounded shadow border border-dashed border-gray-300 opacity-40 mb-1.5 h-10"
 			/>
 		);
 	}
@@ -69,20 +60,21 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 		<div
 			ref={setNodeRef}
 			style={style}
+			onClick={(e) => e.stopPropagation()}
 			className={`bg-white rounded shadow-sm border border-gray-100 mb-1.5 overflow-hidden ${isDragOverlay ? 'shadow-md rotate-1' : 'hover:shadow-md'} ${isDragging ? 'opacity-50' : ''}`}
 		>
 			{/* Colour label bar */}
-			<div className="flex gap-0.5 px-1.5 pt-1.5 pb-0.5">
+			<div className="flex gap-1 px-1.5 pt-1.5 pb-0.5">
 				{isEditing
-					? COLORS.map((c) => (
+					? TASK_COLORS.map((c) => (
 							<button
 								key={c}
 								type="button"
-								onClick={() => setEditColor(c)}
-								className={`h-1.5 w-6 rounded-full ${COLOR_MAP[c]} ${editColor === c ? 'ring-2 ring-offset-1 ring-gray-400' : 'opacity-60'}`}
+								onMouseDown={(e) => { e.preventDefault(); setEditColor(c); }}
+								className={`h-1.5 w-6 rounded-full ${TASK_COLOR_CLASS[c]} ${editColor === c ? 'ring-2 ring-offset-1 ring-gray-400' : 'opacity-60 hover:opacity-100'} transition-all cursor-pointer`}
 							/>
 					  ))
-					: <div className={`h-1.5 w-8 rounded-full ${COLOR_MAP[task.color]}`} />
+					: <div className={`h-1.5 w-8 rounded-full ${TASK_COLOR_CLASS[task.color]}`} />
 				}
 			</div>
 
@@ -100,7 +92,7 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 							onChange={(e) => setEditValue(e.target.value)}
 							onKeyDown={handleKeyDown}
 							onBlur={commitEdit}
-							className="flex-1 text-xs outline-none border-b border-blue-400 bg-transparent py-0.5"
+							className="flex-1 min-w-0 text-xs outline-none border-b border-transparent focus:border-accent-400 bg-transparent py-0.5"
 						/>
 						<button
 							type="button"

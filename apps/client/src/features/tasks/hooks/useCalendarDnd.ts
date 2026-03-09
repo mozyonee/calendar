@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { DragEndEvent, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Task } from '@calendar/types';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { reorderTask } from '@/store/tasksSlice';
+import { moveTaskOptimistic, reorderTask } from '@/features/tasks/slices/tasksSlice';
 
 export function useCalendarDnd() {
 	const dispatch = useAppDispatch();
@@ -44,11 +44,6 @@ export function useCalendarDnd() {
 		}
 		if (!activeTask) return;
 
-		// Determine target date and order
-		// overId is either a task._id or a date string (droppable cell)
-		let targetDate: string;
-		let targetOrder: number;
-
 		// Check if overId matches a task
 		let overTask: Task | null = null;
 		for (const tasks of Object.values(byDate)) {
@@ -56,20 +51,23 @@ export function useCalendarDnd() {
 			if (found) { overTask = found; break; }
 		}
 
+		let targetDate: string;
+		let targetOrder: number;
+
 		if (overTask) {
 			targetDate = overTask.date;
-			// Insert at the position of the task being hovered
 			const siblings = byDate[targetDate] ?? [];
 			const overIndex = siblings.findIndex((t) => t._id === overId);
 			targetOrder = overIndex >= 0 ? overIndex : siblings.length;
 		} else {
-			// overId is a date string (empty cell drop)
 			targetDate = overId;
 			targetOrder = (byDate[targetDate] ?? []).length;
 		}
 
 		if (activeTask.date === targetDate && activeTask.order === targetOrder) return;
 
+		// Update UI immediately, then sync with server
+		dispatch(moveTaskOptimistic({ id: activeId, fromDate: activeTask.date, toDate: targetDate, toOrder: targetOrder }));
 		void dispatch(reorderTask({ id: activeId, dto: { date: targetDate, order: targetOrder } }));
 	}
 

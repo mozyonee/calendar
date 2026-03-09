@@ -38,35 +38,26 @@ export class TasksService {
 		const newDate = dto.date;
 		const newOrder = dto.order;
 
-		if (oldDate !== newDate) {
-			// Remove from old date: compact remaining tasks
-			const oldSiblings = await this.taskModel.find({ date: oldDate, _id: { $ne: id } }).sort({ order: 1 }).exec();
-			await Promise.all(oldSiblings.map((t, i) => this.taskModel.updateOne({ _id: t._id }, { order: i })));
-		}
+		// Compact source date (excludes the moving task)
+		await this.compactDate(oldDate, id);
 
-		// Insert into new date at target position
+		// Shift siblings at target date to make room (excludes the moving task)
 		const siblings = await this.taskModel
 			.find({ date: newDate, _id: { $ne: id } })
 			.sort({ order: 1 })
 			.exec();
 
-		// Shift tasks at or after target position
-		const clamped = Math.min(newOrder, siblings.length);
+		const insertAt = Math.min(newOrder, siblings.length);
 		await Promise.all(
-			siblings.map((t, i) => {
-				const currentIndex = i;
-				if (currentIndex >= clamped) {
-					return this.taskModel.updateOne({ _id: t._id }, { order: currentIndex + 1 });
-				}
-				return this.taskModel.updateOne({ _id: t._id }, { order: currentIndex });
-			}),
+			siblings.map((t, i) =>
+				this.taskModel.updateOne({ _id: t._id }, { order: i < insertAt ? i : i + 1 }),
+			),
 		);
 
 		task.date = newDate;
-		task.order = clamped;
+		task.order = insertAt;
 		await task.save();
 
-		// Return all tasks for affected dates
 		const affectedDates = oldDate !== newDate ? [oldDate, newDate] : [newDate];
 		return this.taskModel.find({ date: { $in: affectedDates } }).sort({ date: 1, order: 1 }).lean().exec();
 	}
@@ -74,8 +65,14 @@ export class TasksService {
 	async remove(id: string): Promise<void> {
 		const task = await this.taskModel.findByIdAndDelete(id).lean().exec();
 		if (!task) throw new NotFoundException('Task not found');
-		// Compact remaining tasks for that date
-		const siblings = await this.taskModel.find({ date: task.date }).sort({ order: 1 }).exec();
-		await Promise.all(siblings.map((t, i) => this.taskModel.updateOne({ _id: t._id }, { order: i })));
+		await this.compactDate(task.date, null);
+	}
+
+	private async compactDate(date: string, excludeId: string | null): Promise<void> {
+		const query = excludeId
+			? { date, _id: { $ne: excludeId } }
+			: { date };
+		const tasks = await this.taskModel.find(query).sort({ order: 1 }).exec();
+		await Promise.all(tasks.map((t, i) => this.taskModel.updateOne({ _id: t._id }, { order: i })));
 	}
 }

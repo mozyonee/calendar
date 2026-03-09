@@ -38,7 +38,7 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
 					else onCancel();
 				}}
 				placeholder="Task name…"
-				className="w-full text-xs border border-blue-400 rounded px-1.5 py-1 outline-none focus:ring-1 focus:ring-blue-400 bg-white"
+				className="w-full text-xs border border-accent-400 rounded px-1.5 py-1 outline-none focus:ring-1 focus:ring-accent-400 bg-white"
 			/>
 		</div>
 	);

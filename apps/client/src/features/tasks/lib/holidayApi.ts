@@ -1,5 +1,5 @@
 import type { PublicHoliday } from '@calendar/types';
-import api from './api';
+import api from '@/lib/api';
 
 export const holidayApi = {
 	fetch: (year: number, countryCode: string) =>
