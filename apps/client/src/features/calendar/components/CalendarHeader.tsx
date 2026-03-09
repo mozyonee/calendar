@@ -6,7 +6,7 @@ import { MONTH_NAMES } from '@/features/calendar/utils/calendarUtils';
 import { useDebounce } from '@/hooks/useDebounce';
 import { styled } from '@/lib/stitches';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { ChevronLeft, ChevronRight, SearchIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const Title = styled('h1', {
