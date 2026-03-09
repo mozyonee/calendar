@@ -27,12 +27,18 @@ const TaskCardRoot = styled(Card, {
 				opacity: 0.5,
 			},
 		},
+		isEditing: {
+			false: {
+				cursor: 'pointer',
+			},
+		},
 	},
 
 	compoundVariants: [
 		{
 			isOverlay: true,
 			isDragging: true,
+			isEditing: false,
 			css: {
 				boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
 			},
@@ -139,6 +145,7 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 			style={style}
 			isOverlay={isDragOverlay}
 			isDragging={isDragging}
+			isEditing={isEditing}
 			onClick={(e) => e.stopPropagation()}
 		>
 			{/* Colour label bar */}
@@ -155,6 +162,7 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 							}}
 							css={{
 								cursor: 'pointer',
+								flex: 1,
 							}}
 						/>
 					))
@@ -171,7 +179,7 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 				}}
 			>
 				{isEditing ? (
-					<Flex align="center" gap={1}>
+					<Flex align="center" gap={1} css={{ width: '100%' }}>
 						<Input
 							ref={inputRef}
 							value={editValue}
