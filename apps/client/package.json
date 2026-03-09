@@ -1,0 +1,40 @@
+{
+  "name": "@calendar/client",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:next dev:ts",
+    "dev:next": "next dev -H 0.0.0.0 -p 3000 --webpack",
+    "dev:ts": "tsc --noEmit --watch --preserveWatchOutput",
+    "build": "next build --webpack",
+    "start": "HOSTNAME=0.0.0.0 PORT=${PORT:-3000} node .next/standalone/apps/client/server.js",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint --fix",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "@calendar/types": "*",
+    "@reduxjs/toolkit": "^2.11.2",
+    "axios": "^1.13.2",
+    "next": "^16.1.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-hot-toast": "^2.6.0",
+    "react-redux": "^9.2.0",
+    "redux-persist": "^6.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "@types/node": "^24.0.1",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.3",
+    "eslint": "^9.28.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.7.4",
+    "tailwindcss": "^4",
+    "@tailwindcss/postcss": "^4",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.1"
+  }
+}
