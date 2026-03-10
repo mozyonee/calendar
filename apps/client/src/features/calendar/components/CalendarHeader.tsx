@@ -18,7 +18,7 @@ const SearchInput = styled(Input, {
 	width: '12rem',
 	fontSize: '$sm',
 	padding: '0.5rem 0.5rem 0.5rem 2rem', // left padding for icon
-	backgroundColor: '$accent600',
+	backgroundColor: '#7c3aed', // $accent600
 	color: '$white',
 	backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 2a8 8 0 105.292 14.292l4.707 4.707 1.414-1.414-4.707-4.707A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"/></svg>')`,
 	backgroundRepeat: 'no-repeat',
@@ -40,11 +40,12 @@ const IconButton = styled(Button, {
 	backgroundColor: 'transparent',
 	borderRadius: '$sm',
 	padding: '$1 !important',
+	transition: 'background-color 200ms ease, opacity 200ms ease',
 	'&:hover': {
-		backgroundColor: 'color-mix(in srgb, $gray300 50%, transparent)',
+		backgroundColor: 'rgba(255, 255, 255, 0.15)',
 	},
 	'&:focus-visible': {
-		outline: '2px solid $accent400',
+		outline: '2px solid $white',
 		outlineOffset: '2px',
 	},
 });
@@ -68,7 +69,7 @@ export function CalendarHeader() {
 			css={{
 				padding: '$2 $4',
 				borderBottom: '1px solid $gray200',
-				backgroundColor: '$accent500',
+				backgroundColor: '#8b5cf6', // $accent500
 				color: '$white',
 				'@sm': {
 					flexDirection: 'column',

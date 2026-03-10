@@ -2,29 +2,47 @@
 
 import { Button, Card, Flex, Input } from '@/components/ui';
 import { TASK_COLORS } from '@/features/tasks/lib/taskColors';
-import { styled } from '@/lib/stitches';
+import { keyframes, styled } from '@/lib/stitches';
 import type { Task, TaskColor } from '@calendar/types';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { X } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+
+const slideUp = keyframes({
+	from: { opacity: 0, transform: 'translateY(10px)' },
+	to: { opacity: 1, transform: 'translateY(0)' },
+});
 
 const TaskCardRoot = styled(Card, {
 	padding: '$2',
 	width: '100%',
 	borderRadius: '$md',
 	minHeight: '2rem',
+	position: 'relative',
+	userSelect: 'none',
+	willChange: 'transform',
+	transition: 'none !important',
+
+	animation: `${slideUp.name} 300ms ease-out backwards`,
 
 	variants: {
 		isOverlay: {
 			true: {
-				boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-				transform: 'rotate(1deg)',
+				animation: 'none',
+				boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+				cursor: 'grabbing',
+				opacity: 1,
+				zIndex: 1000,
+				backgroundColor: '$white',
 			},
 		},
 		isDragging: {
 			true: {
-				opacity: 0.5,
+				animation: 'none',
+				opacity: 0,
+				transition: 'none !important',
+				pointerEvents: 'none',
 			},
 		},
 		isEditing: {
@@ -33,17 +51,6 @@ const TaskCardRoot = styled(Card, {
 			},
 		},
 	},
-
-	compoundVariants: [
-		{
-			isOverlay: true,
-			isDragging: true,
-			isEditing: false,
-			css: {
-				boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
-			},
-		},
-	],
 });
 
 const ColorDot = styled('div', {
@@ -52,7 +59,8 @@ const ColorDot = styled('div', {
 	borderRadius: '$full',
 	border: 'none',
 	padding: 0,
-	transition: 'opacity 150ms ease',
+	transition: 'opacity 150ms ease, box-shadow 150ms ease, margin 150ms ease',
+	boxShadow: '0 0 0 0px transparent',
 
 	'&:hover': {
 		opacity: 1,
@@ -68,8 +76,7 @@ const ColorDot = styled('div', {
 		},
 		selected: {
 			true: {
-				outline: '2px solid $gray400',
-				outlineOffset: '1px',
+				boxShadow: '0 0 0 1px $colors$white, 0 0 0 3px $colors$gray400',
 				opacity: 1,
 				margin: '0 0 $2 0',
 			},
@@ -94,22 +101,31 @@ interface Props {
 	onEdit: (title: string, color: TaskColor) => void;
 	onRemove: () => void;
 	isDragOverlay?: boolean;
+	index?: number;
 }
 
-export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Props) {
+export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false, index = 0 }: Props) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [editValue, setEditValue] = useState(task.title);
 	const [editColor, setEditColor] = useState<TaskColor>(task.color);
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+	// No sortable logic needed for overlay - it's handled by dnd-kit's DragOverlay
+	const sortable = useSortable({
 		id: task._id,
-		disabled: isEditing,
+		disabled: isEditing || isDragOverlay,
+		data: {
+			type: 'Task',
+			task,
+		},
 	});
 
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = sortable;
+
 	const style = {
-		transform: CSS.Transform.toString(transform),
-		transition,
+		transform: isDragOverlay ? undefined : CSS.Translate.toString(transform),
+		transition: isDragging || isDragOverlay ? 'none !important' : transition,
+		animationDelay: `${index * 50}ms`,
 	};
 
 	useEffect(() => {
@@ -141,12 +157,16 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 
 	return (
 		<TaskCardRoot
-			ref={setNodeRef}
+			ref={isDragOverlay ? undefined : setNodeRef}
 			style={style}
 			isOverlay={isDragOverlay}
 			isDragging={isDragging}
 			isEditing={isEditing}
-			onClick={(e) => e.stopPropagation()}
+			onClick={(e) => {
+				e.stopPropagation();
+				if (!isEditing) setIsEditing(true);
+			}}
+			{...(!isEditing && !isDragOverlay ? { ...attributes, ...listeners } : {})}
 		>
 			{/* Colour label bar */}
 			<Flex gap={1}>
@@ -172,12 +192,7 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 			</Flex>
 
 			{/* Title / edit input */}
-			<Flex
-				{...(!isEditing ? { ...attributes, ...listeners } : {})}
-				onClick={() => {
-					if (!isEditing) setIsEditing(true);
-				}}
-			>
+			<Flex>
 				{isEditing ? (
 					<Flex align="center" gap={1} css={{ width: '100%' }}>
 						<Input
@@ -192,6 +207,7 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 							}}
 						/>
 						<Button
+							variant="danger"
 							type="button"
 							onMouseDown={(e) => {
 								e.preventDefault();
@@ -202,7 +218,7 @@ export function TaskCard({ task, onEdit, onRemove, isDragOverlay = false }: Prop
 								height: '100%',
 							}}
 						>
-							<X size={15} />
+							<Trash2 size={15} />
 						</Button>
 					</Flex>
 				) : (

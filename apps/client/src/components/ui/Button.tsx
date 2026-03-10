@@ -10,6 +10,7 @@ export const Button = styled('button', {
 	cursor: 'pointer',
 	backgroundColor: '$gray100',
 	color: '$gray900',
+	transition: 'background-color 200ms ease, opacity 200ms ease, transform 200ms ease',
 
 	display: 'inline-flex',
 	alignItems: 'center',
@@ -41,6 +42,14 @@ export const Button = styled('button', {
 				backgroundColor: 'transparent',
 				color: '$gray900',
 				'&:hover': { backgroundColor: '$gray200' },
+			},
+			danger: {
+				backgroundColor: 'transparent',
+				color: '$gray400',
+				'&:hover': {
+					backgroundColor: '$rose400',
+					color: '$white',
+				},
 			},
 		},
 		size: {

@@ -13,10 +13,11 @@ interface Props {
 export function TaskList({ tasks, onEdit, onRemove }: Props) {
 	return (
 		<SortableContext items={tasks.map((t) => t._id)} strategy={verticalListSortingStrategy}>
-			{tasks.map((task) => (
+			{tasks.map((task, index) => (
 				<TaskCard
 					key={task._id}
 					task={task}
+					index={index}
 					onEdit={(title, color) => onEdit(task._id, title, color)}
 					onRemove={() => onRemove(task._id)}
 				/>

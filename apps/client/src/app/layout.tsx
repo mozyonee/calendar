@@ -1,4 +1,4 @@
-import { globalStyles } from '@/lib/stitches';
+import StitchesRegistry from '@/lib/StitchesRegistry';
 import { ReduxProvider } from '@/store/provider';
 import type { Metadata } from 'next';
 import './globals.css';
@@ -8,13 +8,13 @@ export const metadata: Metadata = {
 	description: 'Calendar application',
 };
 
-globalStyles();
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en">
 			<body>
-				<ReduxProvider>{children}</ReduxProvider>
+				<StitchesRegistry>
+					<ReduxProvider>{children}</ReduxProvider>
+				</StitchesRegistry>
 			</body>
 		</html>
 	);

@@ -7,7 +7,8 @@ import { TaskCard } from '@/features/tasks/components/TaskCard';
 import { useCalendarDnd } from '@/features/tasks/hooks/useCalendarDnd';
 import { styled } from '@/lib/stitches';
 import type { PublicHoliday, Task } from '@calendar/types';
-import { DndContext, DragOverlay } from '@dnd-kit/core';
+import { closestCorners, DndContext, DragOverlay } from '@dnd-kit/core';
+import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { CalendarCell } from './CalendarCell';
 
 const Weekday = styled('div', {
@@ -31,7 +32,12 @@ export function CalendarGrid({ days, tasksByDate, holidaysByDate }: Props) {
 	const { sensors, activeTask, handleDragStart, handleDragEnd } = useCalendarDnd();
 
 	return (
-		<DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+		<DndContext
+			sensors={sensors}
+			collisionDetection={closestCorners}
+			onDragStart={handleDragStart}
+			onDragEnd={handleDragEnd}
+		>
 			<Flex direction="column" flex={1}>
 				{/* Day-of-week header */}
 				<Grid cols={7}>
@@ -53,7 +59,7 @@ export function CalendarGrid({ days, tasksByDate, holidaysByDate }: Props) {
 				</Grid>
 			</Flex>
 
-			<DragOverlay>
+			<DragOverlay dropAnimation={null} modifiers={[restrictToWindowEdges]}>
 				{activeTask && <TaskCard task={activeTask} onEdit={() => {}} onRemove={() => {}} isDragOverlay />}
 			</DragOverlay>
 		</DndContext>

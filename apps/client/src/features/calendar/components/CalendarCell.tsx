@@ -18,6 +18,7 @@ const Container = styled(Card, {
 	padding: '$3',
 	display: 'flex',
 	flexDirection: 'column',
+	transition: 'background-color 200ms ease, box-shadow 200ms ease',
 
 	variants: {
 		currentMonth: {
@@ -71,7 +72,13 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 	const dispatch = useAppDispatch();
 	const [isAdding, setIsAdding] = useState(false);
 
-	const { setNodeRef, isOver } = useDroppable({ id: day.date });
+	const { setNodeRef, isOver } = useDroppable({
+		id: day.date,
+		data: {
+			type: 'Cell',
+			date: day.date,
+		},
+	});
 
 	function handleAddTask(title: string) {
 		void dispatch(addTask({ title, date: day.date }));
@@ -140,10 +147,13 @@ export function CalendarCell({ day, tasks, holidays }: Props) {
 					size={'sm'}
 					css={{
 						opacity: 0,
+						transition: 'opacity 200ms ease, background-color 200ms ease, transform 200ms ease',
+						transform: 'translateY(4px)',
 
 						'&:hover': {
 							backgroundColor: '$accent500',
 							opacity: 1,
+							transform: 'translateY(0)',
 						},
 					}}
 				>

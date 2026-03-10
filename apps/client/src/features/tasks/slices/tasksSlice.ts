@@ -59,10 +59,10 @@ const tasksSlice = createSlice({
 			const { id, fromDate, toDate, toOrder } = action.payload;
 
 			// Remove from source
-			const fromTasks = state.byDate[fromDate] ?? [];
+			const fromTasks = [...(state.byDate[fromDate] ?? [])];
 			const taskIdx = fromTasks.findIndex((t) => t._id === id);
 			if (taskIdx === -1) return;
-			const [task] = fromTasks.splice(taskIdx, 1);
+			const [oldTask] = fromTasks.splice(taskIdx, 1);
 
 			// Recompact source
 			fromTasks.forEach((t, i) => {
@@ -70,16 +70,18 @@ const tasksSlice = createSlice({
 			});
 			state.byDate[fromDate] = fromTasks;
 
+			// Create a NEW task object to avoid mutating the activeTask reference in UI hooks
+			const task = { ...oldTask, date: toDate };
+
 			// Insert into target
-			if (!state.byDate[toDate]) state.byDate[toDate] = [];
-			const toTasks = state.byDate[toDate];
+			const toTasks = [...(state.byDate[toDate] ?? [])];
 			const clamped = Math.min(toOrder, toTasks.length);
-			task.date = toDate;
 			task.order = clamped;
 			toTasks.splice(clamped, 0, task);
 			toTasks.forEach((t, i) => {
 				t.order = i;
 			});
+			state.byDate[toDate] = toTasks;
 		},
 	},
 	extraReducers: (builder) => {
@@ -115,11 +117,11 @@ const tasksSlice = createSlice({
 				}
 			})
 			.addCase(reorderTask.fulfilled, (state, action) => {
-				// Reconcile with authoritative server state
+				// Authoritative server state. Merge carefully.
 				const updated = normalizeTasks(action.payload);
-				for (const [date, tasks] of Object.entries(updated)) {
-					state.byDate[date] = tasks;
-				}
+				// We merge into existing state instead of replacing everything
+				// to avoid losing data from other months/dates if normalized list is partial.
+				Object.assign(state.byDate, updated);
 			});
 	},
 });
